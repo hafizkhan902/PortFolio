@@ -3,7 +3,7 @@
  * Handles JWT authentication with the Portfolio backend
  */
 
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:4000/api';
 const TOKEN_KEY = 'adminToken'; // Changed from 'authToken' to 'adminToken'
 
 class AuthService {

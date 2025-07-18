@@ -12,17 +12,17 @@ const socialLinks = [
   {
     name: 'GitHub',
     icon: FaGithub,
-    url: 'https://github.com/yourusername',
+    url: 'https://github.com/hafizkhan902',
   },
   {
     name: 'LinkedIn',
     icon: FaLinkedin,
-    url: 'https://linkedin.com/in/yourusername',
+    url: 'https://linkedin.com/hafizswe',
   },
   {
     name: 'Behance',
     icon: FaBehance,
-    url: 'https://behance.net/yourusername',
+    url: 'https://behance.net/hafizasad6',
   },
 ];
 
