@@ -515,7 +515,7 @@ class AuthService {
    */
   async getResumes() {
     try {
-      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin`);
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/admin/resume`);
       return result;
     } catch (error) {
       console.error('❌ Get resumes failed:', error.message);
@@ -528,7 +528,7 @@ class AuthService {
    */
   async getResume(resumeId) {
     try {
-      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin/${resumeId}`);
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/admin/resume/${resumeId}`);
       return result;
     } catch (error) {
       console.error('❌ Get resume failed:', error.message);
@@ -552,7 +552,7 @@ class AuthService {
       if (metadata.tags) formData.append('tags', metadata.tags);
       if (metadata.isPublic !== undefined) formData.append('isPublic', metadata.isPublic);
       
-      console.log('📤 Uploading resume to:', `${API_BASE_URL}/resume/upload`);
+      console.log('📤 Uploading resume to:', `${API_BASE_URL}/admin/resume`);
       console.log('📁 File details:', { name: file.name, size: file.size, type: file.type });
       console.log('📋 Metadata:', metadata);
       console.log('🔑 Token available:', !!token);
@@ -572,7 +572,7 @@ class AuthService {
         hasBody: !!requestOptions.body
       });
       
-      const response = await fetch(`${API_BASE_URL}/resume/upload`, requestOptions);
+      const response = await fetch(`${API_BASE_URL}/admin/resume`, requestOptions);
       
       console.log('📥 Response status:', response.status);
       console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
@@ -596,7 +596,7 @@ class AuthService {
    */
   async updateResume(resumeId, updateData) {
     try {
-      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin/${resumeId}`, {
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/admin/resume/${resumeId}`, {
         method: 'PUT',
         body: JSON.stringify(updateData)
       });
@@ -612,7 +612,7 @@ class AuthService {
    */
   async deleteResume(resumeId) {
     try {
-      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin/${resumeId}`, {
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/admin/resume/${resumeId}`, {
         method: 'DELETE'
       });
       return result;
@@ -627,7 +627,7 @@ class AuthService {
    */
   async toggleResumeActive(resumeId) {
     try {
-      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin/${resumeId}/toggle-active`, {
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/admin/resume/${resumeId}/toggle-active`, {
         method: 'PATCH'
       });
       return result;
@@ -642,7 +642,7 @@ class AuthService {
    */
   async toggleResumePublic(resumeId) {
     try {
-      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin/${resumeId}/toggle-public`, {
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/admin/resume/${resumeId}/toggle-public`, {
         method: 'PATCH'
       });
       return result;
