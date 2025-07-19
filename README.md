@@ -68,3 +68,17 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Deploying to Vercel
+
+1. **Push your code to GitHub (or another git provider).**
+2. **Go to [vercel.com](https://vercel.com/) and import your repository.**
+3. **Set the environment variable:**
+   - `REACT_APP_API_BASE_URL=https://portfolioback-production-8c63.up.railway.app/api`
+4. **Build & Output Settings:**
+   - Framework Preset: `Create React App` (or `Other` if using CRACO)
+   - Build Command: `npm run build` (or `yarn build`)
+   - Output Directory: `build`
+5. **Deploy!**
+
+**Note:** Do not commit your `.env` file with secrets. Set all environment variables in the Vercel dashboard under Project Settings > Environment Variables.

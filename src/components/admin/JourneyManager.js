@@ -220,7 +220,7 @@ const JourneyManager = () => {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-md"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-xs sm:max-w-md max-h-[90vh] overflow-y-auto"
           >
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">

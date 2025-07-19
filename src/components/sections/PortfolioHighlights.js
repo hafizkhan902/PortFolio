@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaStar, 
@@ -17,9 +17,9 @@ import {
   FaLightbulb,
   FaDesktop,
   FaMobile,
-  FaTablet,
+  // FaTablet, // Unused - commented out
   FaGem,
-  FaFire,
+  // FaFire, // Unused - commented out
   Fa500Px
 } from 'react-icons/fa';
 import Section from '../layout/Section';
@@ -29,7 +29,7 @@ const PortfolioHighlights = () => {
   const [highlights, setHighlights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedHighlight, setSelectedHighlight] = useState(null);
-  const [viewMode, setViewMode] = useState('masonry'); // 'masonry', 'carousel', 'grid'
+  const [viewMode] = useState('masonry'); // 'masonry', 'carousel', 'grid' - setViewMode unused
   const [currentSlide, setCurrentSlide] = useState(0);
   const [filter, setFilter] = useState('all');
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -243,13 +243,13 @@ const PortfolioHighlights = () => {
                 {highlight.tools.slice(0, 4).map((tool, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-lg font-medium"
+                    className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs  font-medium"
                   >
                     {tool}
                   </span>
                 ))}
                 {highlight.tools.length > 4 && (
-                  <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-lg">
+                  <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs ">
                     +{highlight.tools.length - 4} more
                   </span>
                 )}
@@ -809,12 +809,74 @@ const PortfolioHighlights = () => {
     );
   };
 
+  // YouTube-style horizontal scroll for category buttons
+  const categoryScrollRef = useRef(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+
+  const checkScrollPosition = () => {
+    if (categoryScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = categoryScrollRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  const scrollCategories = (direction) => {
+    if (categoryScrollRef.current) {
+      const scrollAmount = 200; // Adjust scroll distance
+      const newScrollLeft = categoryScrollRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
+      categoryScrollRef.current.scrollTo({
+        left: newScrollLeft,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  useEffect(() => {
+    checkScrollPosition();
+    const scrollContainer = categoryScrollRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', checkScrollPosition);
+      
+      // Add touch/swipe support for mobile
+      let startX = 0;
+      let scrollLeft = 0;
+      
+      const handleTouchStart = (e) => {
+        startX = e.touches[0].pageX - scrollContainer.offsetLeft;
+        scrollLeft = scrollContainer.scrollLeft;
+      };
+      
+      const handleTouchMove = (e) => {
+        if (!startX) return;
+        const x = e.touches[0].pageX - scrollContainer.offsetLeft;
+        const walk = (x - startX) * 2;
+        scrollContainer.scrollLeft = scrollLeft - walk;
+      };
+      
+      const handleTouchEnd = () => {
+        startX = 0;
+      };
+      
+      scrollContainer.addEventListener('touchstart', handleTouchStart);
+      scrollContainer.addEventListener('touchmove', handleTouchMove);
+      scrollContainer.addEventListener('touchend', handleTouchEnd);
+      
+      return () => {
+        scrollContainer.removeEventListener('scroll', checkScrollPosition);
+        scrollContainer.removeEventListener('touchstart', handleTouchStart);
+        scrollContainer.removeEventListener('touchmove', handleTouchMove);
+        scrollContainer.removeEventListener('touchend', handleTouchEnd);
+      };
+    }
+  }, []);
+
   if (loading) {
     return (
       <Section
         id="portfolio-highlights"
         title="Portfolio Highlights"
-        subtitle="Showcasing my most creative and impactful design projects"
         className="py-20"
       >
         <div className="flex justify-center items-center py-20">
@@ -834,7 +896,6 @@ const PortfolioHighlights = () => {
       <Section
         id="portfolio-highlights"
         title="Portfolio Highlights"
-        subtitle="Showcasing my most creative and impactful design projects"
         className="py-20"
       >
         <div className="text-center py-20">
@@ -856,7 +917,7 @@ const PortfolioHighlights = () => {
     <Section
       id="portfolio-highlights"
       title="Portfolio Highlights"
-      subtitle="Showcasing my most creative and impactful design projects"
+
       className="py-20"
     >
       {/* Decorative Background Elements */}
@@ -868,24 +929,67 @@ const PortfolioHighlights = () => {
 
       {/* Header Controls */}
       <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between mb-12 space-y-6 lg:space-y-0">
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-3">
-          {categories.map((category) => (
+        {/* YouTube-style Category Filter */}
+        <div className="relative w-full max-w-4xl mx-auto">
+          {/* Left Arrow */}
+          {showLeftArrow && (
             <motion.button
-              key={category.id}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setFilter(category.id)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                filter === category.id
-                  ? `bg-gradient-to-r ${category.color} text-white shadow-lg`
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              onClick={() => scrollCategories('left')}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-md shadow-lg border border-white/20 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 flex items-center justify-center"
+              aria-label="Scroll left"
             >
-              <category.icon className="w-4 h-4" />
-              <span>{category.label}</span>
+              <FaChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300" />
             </motion.button>
-          ))}
+          )}
+
+          {/* Right Arrow */}
+          {showRightArrow && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              onClick={() => scrollCategories('right')}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-md shadow-lg border border-white/20 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 flex items-center justify-center"
+              aria-label="Scroll right"
+            >
+              <FaChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+            </motion.button>
+          )}
+
+          {/* Gradient Overlays */}
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white dark:from-gray-900 to-transparent pointer-events-none z-10" />
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none z-10" />
+
+          {/* Scrollable Container */}
+          <div
+            ref={categoryScrollRef}
+            className="flex overflow-x-auto scrollbar-hide bg-white/10 dark:bg-gray-900/20 backdrop-blur-lg rounded-2xl border border-white/20 shadow-lg px-4 py-3 gap-3"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              WebkitScrollbar: { display: 'none' }
+            }}
+          >
+            {categories.map((category) => (
+              <motion.button
+                key={category.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setFilter(category.id)}
+                className={`flex-shrink-0 flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 whitespace-nowrap ${
+                  filter === category.id
+                    ? 'bg-gradient-to-r from-accent-blue to-accent-purple text-white shadow-lg ring-2 ring-accent-blue/30'
+                    : 'bg-white/30 dark:bg-gray-800/30 text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 border border-white/20'
+                }`}
+              >
+                <category.icon className="w-4 h-4" />
+                <span className="text-sm font-semibold">{category.label}</span>
+              </motion.button>
+            ))}
+          </div>
         </div>
 
         {/* View Mode Toggle */}
@@ -927,20 +1031,7 @@ const PortfolioHighlights = () => {
         viewport={{ once: true }}
         className="relative z-10 text-center mt-16"
       >
-        <div className="bg-gradient-to-r from-accent-blue/10 via-accent-purple/10 to-accent-green/10 rounded-2xl p-8 backdrop-blur-sm">
-          <div className="flex items-center justify-center mb-4">
-            <FaGem className="w-8 h-8 text-accent-blue mr-3" />
-            <FaFire className="w-8 h-8 text-accent-purple mr-3" />
-            <Fa500Px className="w-8 h-8 text-accent-green" />
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Crafting Digital Experiences
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Each project represents a unique journey of creativity, innovation, and technical excellence. 
-            Explore my work and discover how I bring ideas to life through thoughtful design and development.
-          </p>
-        </div>
+        
       </motion.div>
 
       {/* Detail Modal */}

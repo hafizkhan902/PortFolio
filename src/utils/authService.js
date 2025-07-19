@@ -4,6 +4,7 @@
  */
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:4000/api';
+console.log('🌐 API Base URL:', API_BASE_URL);
 const TOKEN_KEY = 'adminToken'; // Changed from 'authToken' to 'adminToken'
 
 class AuthService {
@@ -505,6 +506,214 @@ class AuthService {
       return data;
     } catch (error) {
       console.error('❌ Get public portfolio highlights failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all resumes (for admin)
+   */
+  async getResumes() {
+    try {
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin`);
+      return result;
+    } catch (error) {
+      console.error('❌ Get resumes failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Get single resume by ID (for admin)
+   */
+  async getResume(resumeId) {
+    try {
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin/${resumeId}`);
+      return result;
+    } catch (error) {
+      console.error('❌ Get resume failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Upload resume (for admin)
+   */
+  async uploadResume(file, metadata = {}) {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const formData = new FormData();
+      formData.append('resume', file);
+      
+      // Add metadata fields
+      if (metadata.title) formData.append('title', metadata.title);
+      if (metadata.version) formData.append('version', metadata.version);
+      if (metadata.description) formData.append('description', metadata.description);
+      if (metadata.tags) formData.append('tags', metadata.tags);
+      if (metadata.isPublic !== undefined) formData.append('isPublic', metadata.isPublic);
+      
+      console.log('📤 Uploading resume to:', `${API_BASE_URL}/resume/upload`);
+      console.log('📁 File details:', { name: file.name, size: file.size, type: file.type });
+      console.log('📋 Metadata:', metadata);
+      console.log('🔑 Token available:', !!token);
+      
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          // Don't set Content-Type for FormData - browser will set it automatically
+        },
+        body: formData,
+      };
+      
+      console.log('📤 Request options:', {
+        method: requestOptions.method,
+        headers: requestOptions.headers,
+        hasBody: !!requestOptions.body
+      });
+      
+      const response = await fetch(`${API_BASE_URL}/resume/upload`, requestOptions);
+      
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
+      
+      const data = await response.json();
+      console.log('📥 Response data:', data);
+      
+      if (!response.ok) {
+        throw new Error(data.message || `HTTP ${response.status}`);
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('❌ Upload resume failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Update resume metadata (for admin)
+   */
+  async updateResume(resumeId, updateData) {
+    try {
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin/${resumeId}`, {
+        method: 'PUT',
+        body: JSON.stringify(updateData)
+      });
+      return result;
+    } catch (error) {
+      console.error('❌ Update resume failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete resume (for admin)
+   */
+  async deleteResume(resumeId) {
+    try {
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin/${resumeId}`, {
+        method: 'DELETE'
+      });
+      return result;
+    } catch (error) {
+      console.error('❌ Delete resume failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Toggle resume active status (for admin)
+   */
+  async toggleResumeActive(resumeId) {
+    try {
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin/${resumeId}/toggle-active`, {
+        method: 'PATCH'
+      });
+      return result;
+    } catch (error) {
+      console.error('❌ Toggle resume active failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Toggle resume public status (for admin)
+   */
+  async toggleResumePublic(resumeId) {
+    try {
+      const result = await this.makeAuthenticatedRequest(`${API_BASE_URL}/resume/admin/${resumeId}/toggle-public`, {
+        method: 'PATCH'
+      });
+      return result;
+    } catch (error) {
+      console.error('❌ Toggle resume public failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Get active public resume
+   */
+  async getActiveResume() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/resume/active`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || `HTTP ${response.status}`);
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('❌ Get active resume failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all public resumes
+   */
+  async getPublicResumes() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/resume/public`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || `HTTP ${response.status}`);
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('❌ Get public resumes failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Download resume
+   */
+  async downloadResume(resumeId, filename) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/resume/download/${resumeId}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      return { success: true };
+    } catch (error) {
+      console.error('❌ Download resume failed:', error.message);
       throw error;
     }
   }

@@ -185,7 +185,7 @@ const Skills = () => {
       subtitle="My technical toolkit and proficiencies"
       className="py-20"
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
         {skillCategories.map((category, index) => {
           const Icon = category.icon;
           return (
@@ -216,7 +216,7 @@ const Skills = () => {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: (index * 0.1) + (skillIndex * 0.05) }}
-                        className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 min-w-0"
                       >
                         <div className="flex items-center flex-1">
                           <div className="w-10 h-10 flex items-center justify-center mr-4">

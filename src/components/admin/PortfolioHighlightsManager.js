@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaImage, FaExternalLinkAlt, FaEye, FaEyeSlash, FaStar, FaUpload, FaPalette, FaRocket, FaMagic, FaHeart, FaFilter, FaSort, FaSearch, Fa500Px, FaList, FaImages, FaArrowUp, FaArrowDown, FaGripVertical } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaImage, FaExternalLinkAlt, FaEye, FaEyeSlash, FaStar, FaUpload, FaPalette, FaFilter, FaSort, FaSearch, FaList, FaImages, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import { useNotification } from '../ui/Notification';
 import authService from '../../utils/authService';
 
@@ -36,7 +36,7 @@ const PortfolioHighlightsManager = () => {
   const [imageInputType, setImageInputType] = useState('upload'); // 'upload' or 'link'
   const [imagePreview, setImagePreview] = useState('');
   const [newImageUrl, setNewImageUrl] = useState(''); // For adding new images
-  const [draggedImageIndex, setDraggedImageIndex] = useState(null);
+  // const [draggedImageIndex, setDraggedImageIndex] = useState(null); // Unused - commented out
   const { showSuccess, showError } = useNotification();
 
   const categories = [
@@ -564,7 +564,7 @@ const PortfolioHighlightsManager = () => {
           )}
         </div>
       ) : (
-        <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6' : 'divide-y divide-gray-200 dark:divide-gray-700'}>
+        <div className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-2 sm:p-6' : 'divide-y divide-gray-200 dark:divide-gray-700'}>
           <AnimatePresence>
             {filteredHighlights.map((highlight, index) => {
               const categoryInfo = getCategoryInfo(highlight.category);
@@ -814,10 +814,10 @@ const PortfolioHighlightsManager = () => {
             className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-xs sm:max-w-2xl max-h-[90vh] overflow-y-auto"
             >
               <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 z-10">
                 <div className="flex justify-between items-center">
@@ -1013,7 +1013,7 @@ const PortfolioHighlightsManager = () => {
                             <div className="aspect-video relative">
                               <img
                                 src={image.url}
-                                alt={`Project image ${index + 1}`}
+                                alt={`Project ${index + 1}`}
                                 className="w-full h-full object-cover"
                               />
                               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-2">

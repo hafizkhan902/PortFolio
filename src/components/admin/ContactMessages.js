@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaEnvelope, FaEnvelopeOpen, FaTrash, FaReply, FaCalendarAlt } from 'react-icons/fa';
 import { useNotification } from '../ui/Notification';
@@ -10,11 +10,9 @@ const ContactMessages = () => {
   const [filter, setFilter] = useState('all'); // all, read, unread
   const { showSuccess, showError } = useNotification();
 
-  useEffect(() => {
-    fetchMessages();
-  }, []);
 
-  const fetchMessages = async () => {
+
+  const fetchMessages = useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('adminToken');
@@ -33,7 +31,10 @@ const ContactMessages = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
 
   const markAsRead = async (messageId) => {
     try {
@@ -194,9 +195,9 @@ const ContactMessages = () => {
   }
 
   return (
-    <div className="grid lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
       {/* Messages List */}
-      <div className="lg:col-span-1">
+      <div className="lg:col-span-1 mb-4 lg:mb-0">
         <div className="mb-4">
           <h2 className="text-xl font-semibold mb-4">Messages ({messages.length})</h2>
           

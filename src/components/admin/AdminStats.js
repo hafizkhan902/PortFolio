@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaProjectDiagram, FaEnvelope, FaEye, FaStar, FaGithub, FaCalendarAlt, FaSync } from 'react-icons/fa';
 import authService from '../../utils/authService';
@@ -18,11 +18,8 @@ const AdminStats = () => {
   const [lastUpdated, setLastUpdated] = useState(null);
   const { showError } = useNotification();
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       setLoading(true);
       console.log('📊 Fetching statistics...');
@@ -43,7 +40,12 @@ const AdminStats = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
 
   const statCards = [
     {
@@ -101,7 +103,7 @@ const AdminStats = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Admin Dashboard</h2>
           {lastUpdated && (
@@ -125,7 +127,7 @@ const AdminStats = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {statCards.map((stat, index) => (
           <motion.div
             key={stat.title}
@@ -184,7 +186,7 @@ const AdminStats = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700"
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700"
       >
         <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -210,7 +212,7 @@ const AdminStats = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700"
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700"
       >
         <h3 className="text-lg font-semibold mb-4">Performance Overview</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

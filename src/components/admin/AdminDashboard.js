@@ -8,7 +8,10 @@ import {
   FaEnvelope,
   FaRoute,
   FaCog,
-  FaPaintBrush
+  FaPaintBrush,
+  FaBars,
+  FaTimes,
+  FaFileAlt
 } from 'react-icons/fa';
 import { useNotification } from '../ui/Notification';
 import authService from '../../utils/authService';
@@ -19,6 +22,7 @@ import ContactMessages from './ContactMessages';
 import JourneyManager from './JourneyManager';
 import SkillsManager from './SkillsManager';
 import PortfolioHighlightsManager from './PortfolioHighlightsManager';
+import ResumeManager from './ResumeManager';
 
 const AdminDashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('projects');
@@ -27,12 +31,14 @@ const AdminDashboard = ({ onLogout }) => {
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const { showSuccess, showError } = useNotification();
+  const [showMenu, setShowMenu] = useState(false);
 
   const tabs = [
     { id: 'projects', label: 'Projects', icon: FaProjectDiagram },
     { id: 'journey', label: 'Journey', icon: FaRoute },
     { id: 'skills', label: 'Skills', icon: FaCog },
     { id: 'portfolio', label: 'Portfolio Highlights', icon: FaPaintBrush },
+    { id: 'resume', label: 'Resume', icon: FaFileAlt },
     { id: 'stats', label: 'Statistics', icon: FaChartBar },
     { id: 'messages', label: 'Messages', icon: FaEnvelope },
   ];
@@ -99,8 +105,8 @@ const AdminDashboard = ({ onLogout }) => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 gap-2 sm:gap-0">
             <h1 className="text-2xl font-bold text-accent-blue">Admin Dashboard</h1>
             <button
               onClick={handleLogout}
@@ -114,14 +120,31 @@ const AdminDashboard = ({ onLogout }) => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tab Navigation */}
-        <div className="mb-8">
-          <nav className="flex space-x-8">
+        {/* Minimal Mobile Toggle Menu */}
+        <div className="mb-8 sm:mb-8">
+          <div className="flex sm:hidden justify-between items-center mb-2">
+            <button
+              onClick={() => setShowMenu((v) => !v)}
+              className="p-2 rounded-md bg-accent-blue text-white focus:outline-none"
+              aria-label="Toggle menu"
+            >
+              {showMenu ? <FaTimes className="w-5 h-5" /> : <FaBars className="w-5 h-5" />}
+            </button>
+            <span className="text-lg font-bold text-accent-blue">Menu</span>
+          </div>
+          <nav
+            className={`${
+              showMenu ? 'block' : 'hidden'
+            } sm:flex flex-wrap sm:flex-nowrap gap-2 sm:space-x-4 bg-white dark:bg-gray-800 sm:bg-transparent sm:dark:bg-transparent rounded-lg shadow-md sm:shadow-none p-2 sm:p-0`}
+          >
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setShowMenu(false);
+                }}
+                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'bg-accent-blue text-white'
                     : 'text-gray-600 hover:text-accent-blue'
@@ -140,6 +163,7 @@ const AdminDashboard = ({ onLogout }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
+          className="min-w-0"
         >
           {activeTab === 'projects' && (
             <div>
@@ -170,6 +194,7 @@ const AdminDashboard = ({ onLogout }) => {
           {activeTab === 'journey' && <JourneyManager />}
           {activeTab === 'skills' && <SkillsManager />}
           {activeTab === 'portfolio' && <PortfolioHighlightsManager />}
+          {activeTab === 'resume' && <ResumeManager />}
           {activeTab === 'stats' && <AdminStats />}
           {activeTab === 'messages' && <ContactMessages />}
         </motion.div>
